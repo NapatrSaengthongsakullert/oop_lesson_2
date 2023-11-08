@@ -89,6 +89,42 @@ class Table:
     def __str__(self):
         return self.table_name + ':' + str(self.table)
 
+# table1 = Table('cities', cities)
+# table2 = Table('countries', countries)
+table3 = Table('players', players)
+table4 = Table('teams', teams)
+table5 = Table('titanic', titanic)
+
+my_DB = DB()
+# my_DB.insert(table1)
+# my_DB.insert(table2)
+my_DB.insert(table3)
+my_DB.insert(table4)
+my_DB.insert(table5)
+my_table1 = my_DB.search('teams')
+my_table2 = my_DB.search('players')
+
+#task1 part1
+my_table1_filtered = my_table1.filter(lambda x: "ia" in x['team'])
+my_table1_join = my_table2.join(my_table1_filtered, 'team')
+my_table1_filtered = my_table1_join.filter(lambda x: int(x['minutes']) < 200).filter(lambda x: int(x['passes']) > 100)
+my_table1_selected = my_table1_filtered.select(['surname', 'team', 'position', 'minutes', 'passes'])
+print(f"His surname is {my_table1_selected[0]['surname']} in {my_table1_selected[0]['team']} team with {my_table1_selected[0]['position']} position ")
+
+#task1 part2
+my_table2_top10_filtered = my_table1.filter(lambda x: int(x['ranking']) <= 10)
+my_table2_below10_filtered = my_table1.filter(lambda x: int(x['ranking']) > 10)
+print(f"Average game played of TOP 10 = {int(my_table2_top10_filtered.aggregate(lambda x: sum(x)/len(x), 'games'))} VS BELOW 10 = {int(my_table2_below10_filtered.aggregate(lambda x: sum(x)/len(x), 'games'))}")
+
+#task1 part3
+my_table3_forwards_filtered = my_table2.filter(lambda x: x['position'] == 'forward')
+my_table3_midfielders_filtered = my_table2.filter(lambda x: x['position'] == 'midfielder')
+print(f"Average passed made by forwards = {int(my_table3_forwards_filtered.aggregate(lambda x: sum(x)/len(x), 'passes'))} VS midfielder = {int(my_table3_midfielders_filtered.aggregate(lambda x: sum(x)/len(x), 'passes'))}")
+
+
+
+
+
 
 # table1 = Table('cities', cities)
 # table2 = Table('countries', countries)
