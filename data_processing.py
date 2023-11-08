@@ -76,6 +76,12 @@ class Table:
             temps.append(float(item1[aggregation_key]))
         return function(temps)
 
+    def aggregate_str(self, function, aggregation_key):
+        temps = []
+        for item1 in self.table:
+            temps.append(item1[aggregation_key])
+        return function(temps)
+
     def select(self, attributes_list):
         temps = []
         for item1 in self.table:
@@ -103,6 +109,7 @@ my_DB.insert(table4)
 my_DB.insert(table5)
 my_table1 = my_DB.search('teams')
 my_table2 = my_DB.search('players')
+my_table3 = my_DB.search('titanic')
 
 #task1 part1
 my_table1_filtered = my_table1.filter(lambda x: "ia" in x['team'])
@@ -121,9 +128,21 @@ my_table3_forwards_filtered = my_table2.filter(lambda x: x['position'] == 'forwa
 my_table3_midfielders_filtered = my_table2.filter(lambda x: x['position'] == 'midfielder')
 print(f"Average passed made by forwards = {int(my_table3_forwards_filtered.aggregate(lambda x: sum(x)/len(x), 'passes'))} VS midfielder = {int(my_table3_midfielders_filtered.aggregate(lambda x: sum(x)/len(x), 'passes'))}")
 
+#task1 part4
+my_table4_first_filtered = my_table3.filter(lambda x: int(x['class']) == 1)
+my_table4_third_filtered = my_table3.filter(lambda x: int(x['class']) == 3)
+print(f"Average fares by 1class = {int(my_table4_first_filtered.aggregate(lambda x: sum(x)/len(x), 'fare'))} VS 3class = {int(my_table4_third_filtered.aggregate(lambda x: sum(x)/len(x), 'fare'))}")
 
-
-
+#task1 part5
+my_table5_m_filtered = my_table3.filter(lambda x: x['gender'] == "M")
+list_m = my_table3.filter(lambda x: x['gender'] == "M").select(['survived'])
+my_table5_m_s_filtered = my_table5_m_filtered.filter(lambda x: x['survived'] == "yes")
+list_ms = my_table5_m_filtered.filter(lambda x: x['survived'] == "yes").select(['survived'])
+my_table5_f_filtered = my_table3.filter(lambda x: x['gender'] == "F")
+list_f = my_table3.filter(lambda x: x['gender'] == "F").select(['survived'])
+my_table5_f_s_filtered = my_table5_f_filtered.filter(lambda x: x['survived'] == "yes")
+list_fs = my_table5_f_filtered.filter(lambda x: x['survived'] == "yes").select(['survived'])
+print(f"Survival rate of M = {(len(list_ms)/len(list_m))*100}% VS F = {(len(list_fs)/len(list_f))*100}%")
 
 
 # table1 = Table('cities', cities)
